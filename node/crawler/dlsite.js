@@ -3,7 +3,7 @@ let crawler = require('./utils/crawler');
 let base = 'https://www.dlsite.com/maniax/info/sellend/=/month/';
 
 let sta = [2025, 11];
-let end = [2025, 11];
+let end = [2025, 10];
 
 let format = (date) => {
   let y = date.getFullYear();
@@ -20,34 +20,31 @@ for (let i = 0; urls.at(-1) !== endUrl; i++) {
   urls.push(url);
 }
 
-crawler(urls, ($, current) => {
-  let elements = [
-    [
-      '<span>Date</span>',
-      '<span>Id</span>',
-      '<span>Name</span>',
-      '<span>Circle</span>',
-    ],
-  ];
+crawler({
+  url: urls,
+  headers: ['Date', 'Id', 'Name', 'Circle'],
+  getData: ($, current) => {
+    let elements = [];
 
-  let list = $('.work_update_history').find('tr');
-  list.each((index, element) => {
-    let date = $(element).find('.update_date').text();
-    let id = $(element).find('.work_no').text();
-    let name = $(element).find('.work_name').text();
-    let circle = $(element).find('.update_circle').text();
+    let list = $('.work_update_history').find('tr');
+    list.each((index, element) => {
+      let date = $(element).find('.update_date').text();
+      let id = $(element).find('.work_no').text();
+      let name = $(element).find('.work_name').text();
+      let circle = $(element).find('.update_circle').text();
 
-    /* 避免出现多个表头 */
-    if (index > 0) {
-      elements.push([
-        `<span>${date}</span>`,
-        `<span>${id}</span>`,
-        `<span>${name}</span>`,
-        `<span>${circle}</span>`,
-      ]);
-    }
-  });
+      /* 避免出现多个表头 */
+      if (index > 0) {
+        elements.push([
+          `<span>${date}</span>`,
+          `<span>${id}</span>`,
+          `<span>${name}</span>`,
+          `<span>${circle}</span>`,
+        ]);
+      }
+    });
 
-  console.log(current, list.length);
-  return elements;
+    console.log(current, list.length);
+    return elements;
+  },
 });

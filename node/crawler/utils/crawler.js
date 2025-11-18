@@ -70,7 +70,7 @@ let run = (url, getData) => {
   });
 };
 
-module.exports = (url, getData) => {
+module.exports = ({ url, headers, getData }) => {
   let server = http.createServer(async (request, response) => {
     // 避免浏览器请求网站图标导致运行代码两遍
     if (request.url === '/favicon.ico') {
@@ -86,6 +86,9 @@ module.exports = (url, getData) => {
     } else {
       await run(url, getData);
     }
+
+    let th = headers.map((i) => `<td>${i}</td>`);
+    $('#table').prepend(`<tr>${th.join('')}</tr>`);
 
     let html = $.html();
 
