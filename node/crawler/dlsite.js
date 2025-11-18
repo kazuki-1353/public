@@ -2,8 +2,8 @@ let crawler = require('./utils/crawler');
 
 let base = 'https://www.dlsite.com/maniax/info/sellend/=/month/';
 
-let sta = [2011, 2];
-let end = [2010, 4];
+let sta = [2025, 11];
+let end = [2025, 11];
 
 let format = (date) => {
   let y = date.getFullYear();
@@ -21,7 +21,14 @@ for (let i = 0; urls.at(-1) !== endUrl; i++) {
 }
 
 crawler(urls, ($, current) => {
-  let elements = [];
+  let elements = [
+    [
+      '<span>Date</span>',
+      '<span>Id</span>',
+      '<span>Name</span>',
+      '<span>Circle</span>',
+    ],
+  ];
 
   let list = $('.work_update_history').find('tr');
   list.each((index, element) => {

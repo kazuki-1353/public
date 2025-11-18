@@ -3,11 +3,46 @@ let https = require('https');
 
 let cheerio = require('cheerio');
 
+let total = 0;
+
 let $ = cheerio.load(`
   <meta charset="utf-8">
-  <table border="1"></table>
+  <button id="btn">下载 CSV</button>
+  <table id="table" border="1"></table>
+
+  <script>
+    const table = document.getElementById("table");
+    const btn = document.getElementById("btn");
+
+    btn.addEventListener("click", () => {
+      let csv = [];
+      for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+          let text = cell.innerText.trim();
+      
+          // 处理 CSV 特殊字符
+          if (text.includes(',') || text.includes('"')) {
+            text = text.replace(/"/g, '""');
+          }
+
+          rowData.push(text);
+        }
+        csv.push(rowData.join(","));
+      }
+
+      const blob = new Blob([csv.join('\\n')], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a"); // 没 append 到 DOM，也就不存在删除问题
+      link.href = url;
+      link.download = Date.now() + '.csv';
+      link.click();
+    
+      URL.revokeObjectURL(url);
+    });
+  </script>
 `);
-let total = 0;
 
 let run = (url, getData) => {
   return new Promise((resolve, reject) => {
@@ -60,7 +95,7 @@ module.exports = (url, getData) => {
     response.end(html);
     server.close(() => {
       console.log('总数', total);
-    })
+    });
   });
 
   server.listen(5555, () => {
